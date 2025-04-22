@@ -1,14 +1,30 @@
-import streamlit as st 
+import streamlit as st  # type: ignore
 import hashlib
-from cryptography.fernet import Fernet 
+from cryptography.fernet import Fernet  # type: ignore
 
 # Generate a key (this should be stored securely in production)
+# Import the necessary modules
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from the .env file
+load_dotenv()
+
+# Access the environment variable (ENCRYPTION_KEY) from the .env file
+encryption_key = os.getenv("ENCRYPTION_KEY")
+
+# Check if the environment variable exists
+if encryption_key:
+    print(f"Encryption Key: {encryption_key}")
+else:
+    print("Encryption Key is not set!")
+
 KEY = Fernet.generate_key()
 cipher = Fernet(KEY)
 
 # In-memory data storage
-stored_data = {}  # {"user1_data": {"encrypted_text": "xyz", "passkey": "hashed"}}
-failed_attempts = 0
+stored_data = {}  # {"user1_data": {"encrypted_text": "xyz", "passkey": "hashed_passkey"}}
+failed_attempts = 0  # Initialize failed_attempts globally
 
 # Function to hash passkey
 def hash_passkey(passkey):
@@ -20,15 +36,15 @@ def encrypt_data(text, passkey):
 
 # Function to decrypt data
 def decrypt_data(encrypted_text, passkey):
-    global failed_attempts  # Declare 'failed_attempts' as global
+    global failed_attempts  # Declare global here before using it
     hashed_passkey = hash_passkey(passkey)
 
     for key, value in stored_data.items():
         if value["encrypted_text"] == encrypted_text and value["passkey"] == hashed_passkey:
-            failed_attempts = 0
+            failed_attempts = 0  # Reset failed_attempts on successful decryption
             return cipher.decrypt(encrypted_text.encode()).decode()
 
-    failed_attempts += 1
+    failed_attempts += 1  # Increment failed_attempts on failure
     return None
 
 # Streamlit UI
@@ -81,6 +97,7 @@ elif choice == "Login":
     login_pass = st.text_input("Enter Master Password:", type="password")
 
     if st.button("Login"):
+       
         if login_pass == "admin123":  # Hardcoded for demo, replace with proper auth
             failed_attempts = 0
             st.success("✅ Reauthorized successfully! Redirecting to Retrieve Data...")
