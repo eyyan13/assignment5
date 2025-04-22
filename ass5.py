@@ -1,6 +1,6 @@
-import streamlit as st
+import streamlit as st  # type: ignore
 import hashlib
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet  # type: ignore
 
 # Generate a key (this should be stored securely in production)
 KEY = Fernet.generate_key()
@@ -20,14 +20,14 @@ def encrypt_data(text, passkey):
 
 # Function to decrypt data
 def decrypt_data(encrypted_text, passkey):
-    global failed_attempts
+    global failed_attempts  # Declare 'failed_attempts' as global
     hashed_passkey = hash_passkey(passkey)
 
     for key, value in stored_data.items():
         if value["encrypted_text"] == encrypted_text and value["passkey"] == hashed_passkey:
             failed_attempts = 0
             return cipher.decrypt(encrypted_text.encode()).decode()
-    
+
     failed_attempts += 1
     return None
 
@@ -82,7 +82,6 @@ elif choice == "Login":
 
     if st.button("Login"):
         if login_pass == "admin123":  # Hardcoded for demo, replace with proper auth
-            global failed_attempts
             failed_attempts = 0
             st.success("✅ Reauthorized successfully! Redirecting to Retrieve Data...")
             st.experimental_rerun()
