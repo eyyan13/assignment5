@@ -1,6 +1,6 @@
-import streamlit as st  # type: ignore
+import streamlit as st 
 import hashlib
-from cryptography.fernet import Fernet  # type: ignore
+from cryptography.fernet import Fernet 
 
 # Generate a key (this should be stored securely in production)
 KEY = Fernet.generate_key()
